@@ -1,16 +1,66 @@
- 
-https://developer.fedoraproject.org/tech/languages/haskell/haskell-installation.html
+There are no prec-compiled binaries for the latest versions of the libraries used. These have to be compiled from source.
 
-sudo dnf copr enable petersen/stack
-sudo dnf -y install stack git ncurses-devel zlib-devel texlive-bbm texlive-bbm-macros texlive-yfonts texlive-prftree texlive-bussproofs texlive-cleveref texlive-xargs texlive-todonotes
-stack upgrade
+# Fedora
 
-git clone https://github.com/agda/agda
-cd agda 
+## Install the Haskell ecosystem
+Based on: https://developer.fedoraproject.org/tech/languages/haskell/haskell-installation.html
+`sudo dnf copr enable petersen/stack`
 
-cp stack-8.6.4.yaml stack.yaml
+Install binaries:
+`sudo dnf -y install stack git ncurses-devel zlib-devel emacs && stack upgrade`
 
-# dnf provides \*libtinfo.so
+## Compile Agda 
+
+`cd` to a fixed directory called `$ROOT` that does not change location.
+Download the source code:
+`git clone https://github.com/agda/agda && cd agda``
+
+Compile with GHC 8.6.4
+`cp stack-8.6.4.yaml stack.yaml && stack setup && stack build`
+
+If this halts, try to find the necessary binaries first such as:
+`dnf provides "\*libtinfo.so"`.
+
+Add the directory of the generated `agda` and `agda-mode` to your path in your shell's config file. They may be located in:
+`$ROOT/agda/.stack-work/install/x86_64-linux-tinfo6/lts-13.16/8.6.4/bin/`
+
+Reload your shell's config file, for example with:
+`source ~/.bashrc`
+
+Test the following command:
+`agda --version`
+
+Configure emacs:
+`agda-mode setup`
 
 
-stack setup && stack build
+## Install libraries
+
+Go back to the fixed root directory `$ROOT` with `cd ..`
+Download the source code with:
+`git clone https://github.com/agda/agda-stdlib.git && cd agda-stdlib && git checkout v1.0`
+
+Optionally do `cabal install`
+
+Go back to `$ROOT` with `cd ..`.
+
+Download cubical library with
+`git clone https://github.com/agda/cubical`
+
+Prepare the code with:
+`cd cubical && make && cd ..`
+  
+Make the libraries importable by agda making a file `$HOME/.agda/libraries` with contents
+```
+$ROOT/agda-stdlib/standard-library.agda-lib
+$ROOT/cubical/cubical.agda-lib
+```
+
+A file `$HOME/.agda/defaults` with contents:
+```
+standard-library
+cubical
+```
+
+
+
