@@ -57,6 +57,8 @@ doubleCong f p q i = cong₂ f p q i
 sumLem : (x y :  ℕ) → notZero x → notZero y → predℕ (x + y) ≡ suc (predℕ (predℕ (x + y)))
 sumLem x y (x⁻ , snd₁) (y⁻ , snd₂) = sucPredLemma (predℕ (x + y)) ((x⁻ + y⁻) , (cong predℕ (doubleCong (_+_) snd₁ snd₂)) ∙ (+-suc x⁻ y⁻))
 
+--The implementation of the definition of $M_2$ in agda works by giving a term for the record type magmas. Such a term, called a record, takes all the components of a magma such as the carrier set, operator and equivalence relation on the carrier set and groups them in one object.
+
 op₂ : Op₂ ℕ₀
 op₂ (x , p)  (y , q) = ( predℕ ( x + y ) , ( predℕ (predℕ (x + y)) , sumLem x  y p q) )
 
@@ -91,6 +93,8 @@ fEquiv = (f ,  isoToIsEquiv (iso f g l' r'))
 fEq : ℕ ≡ ℕ₀ 
 fEq i = ua fEquiv i
 
+-- This definition of the intermediate operator is done by transporting the arguments along zeroPath back to fEq i0, applying op₁. The result is then translated back forward to fEq i.
+
 zeroPath : (i : I) → (fEq i) ≡ (fEq i0)
 zeroPath i = λ j → fEq (i ∧ (~ j))
 
@@ -103,7 +107,7 @@ op₂' = (λ z z₁ → transp (λ i → ℕ₀) i0 (prim^unglue  (op₁ (transp
 transOp : PathP (λ i → Op₂ (fEq i))  op₁'  op₂' 
 transOp i x y = transport (sym (zeroPath i)) (op₁ (transport (zeroPath i) x) (transport (zeroPath i) y))
 
-
+-- This code shows two lemma of the fact that the endpoints of the original intermediate operator are definitionally equal to op₁ and op₂. Using this proofs and transport, a new intermediate operator transOp' is defined that does satisfy the requirements for the intermediate operator of the intermediate magma.
 
 startLemma : op₁ ≡ op₁'
 startLemma i = λ x y → x + (transportRefl y) i

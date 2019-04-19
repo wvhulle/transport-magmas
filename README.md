@@ -9,3 +9,11 @@ Structure of the code:
  - A proof of equivalence between the carrier sets.
  - Univalence from cubical type theory is used to define an equality term, a path.
  - A proof of a property for one of the structures is transported to the other structure.
+ 
+ 
+ 
+ ## How to read this code
+ 
+ Follow the installation instructions and open the file `AlgebraUA.agda` in emacs.
+ Press `control-{c l}` to typecheck the code.
+ Middle mouse click on identifiers to view definitions.
