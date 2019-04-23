@@ -17,7 +17,7 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Univalence as Univalence
 open import Cubical.Foundations.Equiv
 
-≡equiv : IsEquivalence _≡_
+≡equiv : ∀ {a} {A : Set a} → IsEquivalence {a} {a} {A} _≡_
 ≡equiv = record {refl = refl ; sym = sym ; trans = _∙_ }
 
 cong1 : { x y u v : ℕ} → x ≡ y → u ≡ v → (x + u) ≡ (y + v)
@@ -132,7 +132,7 @@ algPath = λ i → record {
    _∙_ = transOp' i ;
    isMagma = record {
     isEquivalence = ≡equiv  ;
-     ∙-cong   = {! doubleCong (transOp' i)!}
+     ∙-cong   = {! doubleCong (transOp' i)!} --
      }
    }
 

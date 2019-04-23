@@ -1,7 +1,7 @@
 # Transport of magmas (with univalence)
 
 This repository contains Agda code in which an application of univalence is explored.
-See INSTALL.md for installation instructions.
+See [INSTALL](INSTALL.md) for installation instructions.
 
 Structure of the code:
  - Imports of the standard Agda library and the Cubical library.

@@ -25,32 +25,44 @@ Install pre-compiled distro-specific  binaries as before but now with `apt`.
 
 # Compilation step
 
+`cd` to a fixed directory called `$ROOT` that does not change location.
 
 ## Compile Agda 
 
-`cd` to a fixed directory called `$ROOT` that does not change location.
+
 Download the source code:
 ```
 git clone https://github.com/agda/agda && cd agda
 ```
 
 Compile with GHC 8.6.4
-`cp stack-8.6.4.yaml stack.yaml && stack setup && stack build`
+```
+cp stack-8.6.4.yaml stack.yaml && stack setup && stack build
+```
 
 If this halts, try to find the necessary binaries first such as:
-`dnf provides "\*libtinfo.so"` or `apt search "libtinfo`
+```
+dnf provides "\*libtinfo.so"` or `apt search "libtinfo
+```
 
 Add the directory of the generated `agda` and `agda-mode` to your path in your shell's config file. They may be located in:
-`$ROOT/agda/.stack-work/install/x86_64-linux-tinfo6/lts-13.16/8.6.4/bin/`
+```
+$ROOT/agda/.stack-work/install/x86_64-linux-tinfo6/lts-13.16/8.6.4/bin/
+```
 
 Reload your shell's config file, for example with:
-`source ~/.bashrc`
+```
+source ~/.bashrc
+```
 
 Test the following command:
-`agda --version`
+```agda --version
+```
 
 Configure emacs:
-`agda-mode setup`
+```
+agda-mode setup
+```
 
 Go back to the fixed root directory `$ROOT` with `cd ..`
 
@@ -61,7 +73,9 @@ Go back to the fixed root directory `$ROOT` with `cd ..`
 ### The standard library
 
 Download the source code with:
-`git clone https://github.com/agda/agda-stdlib.git && cd agda-stdlib && git checkout v1.0`
+```
+git clone https://github.com/agda/agda-stdlib.git && cd agda-stdlib && git checkout v1.0
+```
 
 Optionally do `cabal install`
 
@@ -70,10 +84,14 @@ Go back to `$ROOT` with `cd ..`.
 ### The cubical library
 
 Download cubical library with
-`git clone https://github.com/agda/cubical`
+```
+git clone https://github.com/agda/cubical
+```
 
 Prepare the code with:
-`cd cubical && make && cd ..`
+```
+cd cubical && make && cd ..
+```
   
 Make the libraries importable by agda making a file `$HOME/.agda/libraries` with contents
 ```
