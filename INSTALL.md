@@ -56,7 +56,8 @@ source ~/.bashrc
 ```
 
 Test the following command:
-```agda --version
+```
+agda --version
 ```
 
 Configure emacs:
