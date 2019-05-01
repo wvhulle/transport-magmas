@@ -1,13 +1,14 @@
 {-# OPTIONS --cubical --safe #-}
-module AlgebraUA  where
+module AlgebraUA   where
 
-import Algebra
+open import Algebra
 open import Algebra.FunctionProperties.Core
 open import Algebra.Structures
 open import Algebra.Morphism
 
 open import Function
 open import Relation.Binary
+open import Agda.Primitive
 
 open import Cubical.Data.Nat.Properties
 open import Cubical.Data.Nat
@@ -25,6 +26,16 @@ cong1 p1 p2 =   (cong (λ x → (x + (p2 i0))) p1) ∙ ( cong (λ u → (p1 i1) 
 
 op₁ : Op₂ ℕ
 op₁ = _+_
+
+{-
+record myMagma  c ℓ : Set (lsuc  (c ⊔ ℓ)) where
+  infixl 7 _ ✧ _
+  field
+    Carrier : Set c
+    _✧_     : Op₂ Carrier
+    s       : isSet Carrier
+ -}   
+
 
 s₁ : Algebra.Magma  _ _
 s₁ = record {
@@ -49,7 +60,7 @@ toℕ (n , p) = n
 sucPredLemma : (n : ℕ) → notZero n → n ≡ suc (predℕ n)
 sucPredLemma n (n⁻ , p) = p ∙ (cong suc (refl ∙ (cong predℕ (sym p))))
 
-doubleCong : {X Y : Set _} {Z : Set _} {x₁ x₂ : X} {y₁ y₂ : Y}
+doubleCong : ∀ {a b} {X Y : Set a} {Z : Set b} {x₁ x₂ : X} {y₁ y₂ : Y}
               (f : X → Y → Z) → x₁ ≡ x₂ → y₁ ≡ y₂ → f x₁ y₁ ≡ f x₂ y₂    
 --doubleCong f p q = λ i →  ((cong f p) i) (q i)
 doubleCong f p q i = cong₂ f p q i
@@ -91,7 +102,7 @@ fEquiv : ℕ ≃ ℕ₀
 fEquiv = (f ,  isoToIsEquiv (iso f g l' r'))
 
 fEq : ℕ ≡ ℕ₀ 
-fEq i = ua fEquiv i
+fEq = ua fEquiv
 
 -- This definition of the intermediate operator is done by transporting the arguments along zeroPath back to fEq i0, applying op₁. The result is then translated back forward to fEq i.
 
@@ -99,12 +110,14 @@ zeroPath : (i : I) → (fEq i) ≡ (fEq i0)
 zeroPath i = λ j → fEq (i ∧ (~ j))
 
 op₁' : Op₂ (fEq i0)
-op₁' = (λ z z₁ → z + transport refl z₁)
+op₁' = (λ x y → x + transport refl y)
 
 op₂' : Op₂ (fEq i1)
-op₂' = (λ z z₁ → transp (λ i → ℕ₀) i0 (prim^unglue  (op₁ (transport (sym fEq) z) (transport (sym fEq) z₁))))
+--op₂'  x y = transp (λ i → ℕ₀) i0 (prim^unglue {ℓ-zero} {ℓ-zero} {Σ ℕ notZero} {i1} {{!!}} {λ p → {!fEquiv!}} (op₁ (transport {ℓ-zero} {ℕ₀} {ℕ} (sym {ℓ-suc ℓ-zero} {{!!}} fEq) x) (transport {ℓ-zero} {Σ ℕ (λ z → Σ ℕ (λ z₁ → z ≡ suc z₁))} {ℕ} (sym {ℓ-suc ℓ-zero} {{!!}} fEq) y)))
 
-transOp : PathP (λ i → Op₂ (fEq i))  op₁'  op₂' 
+op₂' x y = transport fEq (op₁ (transport (sym fEq) x) (transport (sym fEq) y))
+
+transOp : PathP (λ i → Op₂ (fEq i))  op₁'  op₂'
 transOp i x y = transport (sym (zeroPath i)) (op₁ (transport (zeroPath i) x) (transport (zeroPath i) y))
 
 -- This code shows two lemma of the fact that the endpoints of the original intermediate operator are definitionally equal to op₁ and op₂. Using this proofs and transport, a new intermediate operator transOp' is defined that does satisfy the requirements for the intermediate operator of the intermediate magma.
@@ -112,12 +125,20 @@ transOp i x y = transport (sym (zeroPath i)) (op₁ (transport (zeroPath i) x) (
 startLemma : op₁ ≡ op₁'
 startLemma i = λ x y → x + (transportRefl y) i
 
+-- uaβ : {A B : Set ℓ} (e : A ≃ B) (x : A) → transport (ua e) x ≡ e .fst x
+-- (e x) = op₁, transport (ua e) x = op₂'
+
+
+tEq : (ℕ ≃ ℕ₀) ≡ (ℕ ≃ Σ ℕ notZero)
+tEq = cong (λ t → ℕ ≃ t) refl
 
 endLemma : op₂ ≡ op₂'
-endLemma = sym $ Univalence.uaβ  ((idEquiv (ℕ₀ → ℕ₀ → ℕ₀))) op₂
+-- endLemma i x y = (sym (Univalence.uaβ ((λ n → ({!suc n!} , ({!n!} , {!refl!}))) , {!!}) ((op₁ (transport (sym fEq) x) (transport (sym fEq) y))))) i
+endLemma i x y = (sym (Univalence.uaβ (transport tEq {!fEquiv!}) ((op₁ (transport (sym fEq) x) (transport (sym fEq) y))))) i
 
 pathLemma : (PathP (λ i → Op₂ (fEq i)) op₁' op₂')  ≡  PathP ((λ i → Op₂ (fEq i))) op₁ op₂
-pathLemma = doubleCong (PathP (λ i → Op₂ (fEq i))) startLemma endLemma
+--pathLemma = doubleCong (PathP (λ i → Op₂ (fEq i))) startLemma endLemma
+pathLemma = doubleCong {!!} startLemma endLemma
 
 -- PathP : ∀ {ℓ} (A : I → Set ℓ) → A i0 → A i1 → Set ℓ
 transOp' : PathP (λ i → Op₂ (fEq i)) op₁ op₂
@@ -141,7 +162,7 @@ open Algebra.Magma
 --test1 : (Algebra.Magma._∙_ s₂) ≡ (Algebra.Magma._∙_ (algPath i1))
 --test1 = {!!}
 
-isCommutative : (Algebra.Magma _ _) → Set _
+isCommutative : ∀  {a l} → (Algebra.Magma a l) → Set a
 isCommutative m = (x y : (Carrier m)) →  ((Algebra.Magma._∙_  m) x y) ≡ ((Algebra.Magma._∙_  m) y x)
 
 com₁ : isCommutative s₁
