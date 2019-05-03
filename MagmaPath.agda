@@ -78,8 +78,7 @@ startLemma i x y = x + (transportRefl y) i
 endLemma :  op₂'  ≡ op₂
 --endLemma i x y  =(Univalence.uaβ {!fEquiv!} (op₁ (transport (sym fEq) x) (transport (sym fEq) y))) i 
 
-endLemma j x y = op₂ x y
-  -- (Univalence.uaβ {{!!}} {{!!}} {{!!}}  fEquiv ((op₁ (transport (sym fEq) x) (transport (sym fEq) y)))) i
+endLemma j x y = (Univalence.uaβ {{!!}} {{!!}} {{!!}} {!fEquiv!} ((op₁ (transport (sym fEq) x) (transport (sym fEq) y)))) j
 
 pathLemma : (PathP (λ i → Op₂ (fEq i)) op₁' op₂')  ≡  PathP ((λ i → Op₂ (fEq i))) op₁ op₂
 --pathLemma = doubleCong (PathP (λ i → Op₂ (fEq i))) startLemma endLemma
