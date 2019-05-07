@@ -54,50 +54,45 @@ op₁' : Op₂ ℕ
 op₁' x y = x + transport refl y 
 
 op₂' : Op₂ ℕ₀
---op₂' x y = transport fEq
---    (op₁ (transport (sym fEq) x) (transport (sym fEq) y))
+op₂' x y = transport fEq
+    (op₁ (transport (sym fEq) x) (transport (sym fEq) y))
 
-op₂'  x y  = transp (λ i → ℕ₀) i0
-  (prim^unglue {{!!}} {{!!}} {{!!}} {{!!}} {{!!}} {{!!}}
-  (op₁ (transport (sym fEq) x) (transport (sym fEq) y)))
+-- op₂'  x y  = transp (λ i → ℕ₀) i0
+--  (prim^unglue {ℓ-zero} {ℓ-zero} {Σ ℕ notZero} {i1} {λ x → ℕ} {\ p → (λ z → {!!} , {!!} , {!!}) , {!!}}
+--  (op₁ (transport (sym fEq) x) (transport (sym fEq) y)))
 
 
-transOp : PathP (λ i → Op₂ (fEq i))  op₁'  op₂'
-transOp i x y = transport (sym (zeroPath i))
+opᵢ' : PathP (λ i → Op₂ (fEq i))  op₁'  op₂'
+opᵢ' i x y = transport (sym (zeroPath i))
     (op₁ (transport (zeroPath i) x) (transport (zeroPath i) y))
 
 -- This code shows two lemma of the fact that the endpoints of the original intermediate operator are definitionally equal to op₁ and op₂. Using this proofs and transport, a new intermediate operator transOp' is defined that does satisfy the requirements for the intermediate operator of the intermediate magma.
 
 startLemma : op₁ ≡ op₁'
-startLemma i x y = x + (transportRefl y) i
+startLemma i = λ x y → x + (transportRefl y) i
 
+-- uaβ : (e : A ≃ B) (x : A) → transport (ua e) x ≡ (fst e) x
+-- here                                  (ua e) = sym (zeroPath i)
+-- so e = au (sym (zeroPath i))
 
--- uaβ : {A B : Set ℓ} (e : A ≃ B) (x : A) → transport (ua e) x ≡ e .fst x
--- (e x) = op₁, transport (ua e) x = op₂'
+endLemma : op₂ ≡ op₂'
+endLemma i x y = {!!}
 
-endLemma :  op₂'  ≡ op₂
---endLemma i x y  =(Univalence.uaβ {!fEquiv!} (op₁ (transport (sym fEq) x) (transport (sym fEq) y))) i 
-
-endLemma j x y = (Univalence.uaβ {{!!}} {{!!}} {{!!}} {!fEquiv!} ((op₁ (transport (sym fEq) x) (transport (sym fEq) y)))) j
+-- endLemma = sym {ℓ-zero} {ℕ₀ → ℕ₀ → ℕ₀} {transport (ua (idEquiv (ℕ₀ → ℕ₀ → ℕ₀))) op₂} {idEquiv (ℕ₀ → ℕ₀ → ℕ₀) .fst op₂} ( Univalence.uaβ {ℓ-zero} {ℕ₀ → ℕ₀ → ℕ₀} {ℕ₀ → ℕ₀ → ℕ₀} ((idEquiv (ℕ₀ → ℕ₀ → ℕ₀))) op₂)
 
 pathLemma : (PathP (λ i → Op₂ (fEq i)) op₁' op₂')  ≡  PathP ((λ i → Op₂ (fEq i))) op₁ op₂
---pathLemma = doubleCong (PathP (λ i → Op₂ (fEq i))) startLemma endLemma
-pathLemma = doubleCong (PathP (λ i → Op₂ (fEq i))) startLemma (sym endLemma)
-
+pathLemma = doubleCong (PathP (λ i → Op₂ (fEq i))) startLemma endLemma
 -- PathP : ∀ {ℓ} (A : I → Set ℓ) → A i0 → A i1 → Set ℓ
-transOp' : PathP (λ i → Op₂ (fEq i)) op₁ op₂
-transOp' = transport pathLemma transOp
+opᵢ : PathP (λ i → Op₂ (fEq i)) op₁ op₂
+opᵢ = transport pathLemma opᵢ'
 -- the endpoints should be precisely op₁ and op₂
-
-
 algPath : s₁ ≡ s₂
 algPath = λ i → record {
    Carrier = (fEq i) ;
    _≈_ =  _≡_;
-   _∙_ = transOp' i ;
+   _∙_ = opᵢ i ;
    isMagma = record {
     isEquivalence = ≡equiv  ;
-     ∙-cong   = {! doubleCong (transOp' i)!} --
+     ∙-cong   = {! doubleCong (transOp' i)!}
      }
    }
-
