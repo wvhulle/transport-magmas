@@ -5,7 +5,7 @@ module AlgebraExamples where
 open import Relation.Binary.Core
 open import Cubical.Foundations.Prelude
 open import Cubical.Data.Nat
-
+open import Cubical.Data.Nat.Properties as P
 
 open import Algebra
 open import Algebra.FunctionProperties.Core -- Op₂
@@ -39,7 +39,7 @@ s₁ = record {
    isMagma = record {
     isEquivalence = ≡equiv ;
      ∙-cong   = cong1
-     }
+    }
    }
 
 notZero :  ℕ → Set _
