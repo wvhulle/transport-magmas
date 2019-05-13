@@ -22,8 +22,10 @@ open import Cubical.Foundations.Equiv
 
 open import Agda.Primitive.Cubical
 
+open import Data.Nat.Solver
 
 open import AlgebraExamples
+--open import Cubical.Foundations.HoTT-UF
 
 
 f : ℕ → ℕ₀ 
@@ -98,21 +100,42 @@ l₂ : (x y : ℕ₀) → f (op₁  (transport (sym fEq) x) (transport (sym fEq)
 l₂ x y = doubleCong (λ x y → f (op₁ x y)) (transpL x) (transpL y)
 
 l₂' : ( x y : ℕ₀) →  g x + g y ≡ predℕ (predℕ (fst x + fst y) )
-l₂'  x y = {!refl!} 
+l₂' (x , zero , p) (y , zero , q) = {!!}
+l₂' (x , zero , p) (y , suc y⁻ , q) = {!!}
+l₂' (x , suc x⁻ , p) (y , zero , q) = {!!}
+l₂' (x , suc x⁻ , p) (y , suc y⁻ , q) = {!!}
 
 l₃ : (x y : ℕ₀) → f (op₁  (g x) (g  y)) ≡ f (predℕ ( predℕ ((fst x) + (fst y))))
 l₃ (x , (x⁻ , p)) (y , (y⁻ , q)) = cong f {!l₂'  (f x⁻) (f y⁻)!}
 
 l₄ : (x y : ℕ₀) → f (predℕ ( predℕ (fst x + fst y))) ≡ ( predℕ ( fst x + fst y ) , ( predℕ (predℕ (fst x + fst y)) , sumLem (fst x)  (fst y) (snd x) (snd y)) )
-l₄ (x , (x⁻ , p)) (y , (y⁻ , q)) = {!refl!}
+l₄ (x , (x⁻ , p)) (y , (y⁻ , q)) = {!!}
 
 -- op₂ (x , p)  (y , q) = ( predℕ ( x + y ) , ( predℕ (predℕ (x + y)) , sumLem x  y p q) )
 
 
 endLemma : op₂' ≡ op₂
 endLemma i x y =
-  ((((l₁ x y) ∙ l₂ x y) ∙ (l₃ x y)) ∙ (l₄ x y)) i -- predℕ (((fst x) + (fst y)) ≡⟨ ? ⟩ ? ∎
---sym (Univalence.uaβ {!fEquiv!} {!(op₁ (transport (zeroPath i) x) (transport (zeroPath i) y))!}) i
+  (op₂' x y
+       ≡⟨ refl ⟩
+   transport fEq (op₁ (transport (sym fEq) x) (transport (sym fEq) y))
+       ≡⟨ l₁ x y ⟩
+   f (op₁  (transport (sym fEq) x) (transport (sym fEq) y))
+       ≡⟨ l₂ x y ⟩
+   f (op₁  (g x) (g  y))
+       ≡⟨ l₃ x y ⟩
+   f (predℕ ( predℕ ((fst x) + (fst y))))
+       ≡⟨ l₄ x y ⟩
+   ( predℕ ( fst x + fst y ) , ( predℕ (predℕ (fst x + fst y)) , sumLem (fst x)  (fst y) (snd x) (snd y)) )
+       ≡⟨ refl ⟩
+   op₂ x y ∎) i      -- ? ≡⟨ ? ⟩
+--  ((((l₁ x y) ∙ l₂ x y) ∙ (l₃ x y)) ∙ (l₄ x y)) i
+
+
+
+  --op₂' x y  ≡[ i ]  refl 
+    --transport fEq (op₁ (transport (sym fEq) x) (transport (sym fEq) y)) ≡[ i ]  l₁ x y i
+    --f (op₁  (transport (sym fEq) x) (transport (sym fEq) y))  ∎
 
 
 pathLemma : (PathP (λ i → Op₂ (fEq i)) op₁' op₂')  ≡  PathP ((λ i → Op₂ (fEq i))) op₁ op₂
