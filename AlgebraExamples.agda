@@ -124,7 +124,6 @@ s₂ = record {
   Carrier = ℕ₀ ;
   _✧_ = op₂ ;
   s = transport (λ i → isSet (fEq i)) isSetℕ
-  
   }
 
 

@@ -1,9 +1,9 @@
+{-# OPTIONS --cubical --safe #-}
+
 module PropertyTransports where
 
-import {-# OPTIONS --cubical --safe #-}
 
-
-open Algebra.Magma
+open import MagmaPath
 
 --test1 : (Algebra.Magma._∙_ s₂) ≡ (Algebra.Magma._∙_ (algPath i1))
 --test1 = {!!}
