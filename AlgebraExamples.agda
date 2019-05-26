@@ -96,15 +96,26 @@ rightInv a = refl
 
 -- r' zero = refl
 -- r' (suc a) = refl
+fIso : Iso ℕ ℕ₀
+fIso = (iso f g leftInv rightInv)
+
+--gIso : Iso ℕ₀ ℕ
+--gIso = (iso g f rightInv leftInv)
+
+invIso : {l l' : Level } → {A : Set l} → {B : Set l'} → Iso A B → Iso B A
+invIso (iso fun inv rightInv₁ leftInv₁) = iso inv fun leftInv₁ rightInv₁
 
 fEquiv : ℕ ≃ ℕ₀ 
-fEquiv = (f ,  isoToIsEquiv (iso f g leftInv rightInv))
+fEquiv = isoToEquiv fIso
 
 gEquiv : ℕ₀ ≃ ℕ
-gEquiv = (g , isoToIsEquiv (iso g f rightInv leftInv))
+gEquiv = isoToEquiv (invIso fIso)
 
 fEq : ℕ ≡ ℕ₀ 
 fEq = ua fEquiv
+
+gEq : ℕ₀ ≡ ℕ
+gEq = ua gEquiv
 
 op₂ : Op₂ ℕ₀
 op₂ (suc x , _) (suc y , _) = ((suc (x + y))  , true)
