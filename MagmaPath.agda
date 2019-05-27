@@ -10,7 +10,7 @@ open import Cubical.Foundations.Prelude -- ≡
 open import Algebra.FunctionProperties.Core -- Op₂
 open import Cubical.Foundations.Univalence as Univalence
 open import Cubical.Foundations.Equiv
-
+open import Cubical.Foundations.Function
 open import Agda.Primitive.Cubical
 open import AlgebraExamples
 zeroPath : (i : I) → (fEq i) ≡ ℕ
@@ -21,17 +21,10 @@ op₁' x y = x + transport refl y
 
 op₂' : Op₂ ℕ₀
 op₂' x y = transport fEq (op₁ (transport (sym fEq) x) (transport (sym fEq) y))
---op₂' x y = transport fEq (op₁ (transport gEq x) (transport gEq y))
-
-
 
 opᵢ' : PathP (λ i → Op₂ (fEq i))  op₁  op₂'
 opᵢ' i x y = transport (sym (zeroPath i))
     (op₁ (transport (zeroPath i) x) (transport (zeroPath i) y))
-
---opᵢ' i x y = transport (sym (zeroPath i))
---    (op₁ (transport (zeroPath i) x) (transport (zeroPath i) y))
-
 
 startLemma : op₁ ≡ op₁'
 startLemma i x y = x + (transportRefl y) i
@@ -39,28 +32,26 @@ startLemma i x y = x + (transportRefl y) i
 transpR : (z : ℕ) → transport fEq z ≡ f z
 transpR z = Univalence.uaβ fEquiv z
 
--- ua e i = Glue B (λ { (i = i0) → (A , e)
---                    ; (i = i1) → (B , idEquiv B) })
+baseIndLemma : (A : Type ℓ-zero) → (λ i → ua (idEquiv A) (~ i)) ≡ ua (invEquiv (idEquiv A))
+baseIndLemma A = 
+  sym ( ua (idEquiv A) ) ≡⟨ uaIdEquiv ⟩
+  sym refl ≡⟨ refl ⟩
+  refl ≡⟨ sym uaIdEquiv ⟩
+  ua (idEquiv A) ≡⟨ cong ua (equivEq (idEquiv A) (invEquiv (idEquiv A)) refl) ⟩
+  ua (invEquiv (idEquiv A)) ∎
 
-transpLLemma₁ : sym (ua (isoToEquiv fIso)) ≡ ua (isoToEquiv (invIso fIso))
-transpLLemma₁ = {!!}
-
--- maybe with isomorphism induction?
---elimIso : {B : Type ℓ} → (Q : {A : Type ℓ} → (A → B) → (B → A) → Type ℓ') →
---          (h : Q (idfun B) (idfun B)) → {A : Type ℓ} →
---          (f : A → B) → (g : B → A) → section f g → retract f g → Q f g
-
---elimIso (λ f g → )
-
-transpLLemma₂ : (z : ℕ₀) → transport (sym fEq) z ≡ transport (ua gEquiv) z
-transpLLemma₂ z = cong (λ p → transport p z) transpLLemma₁ 
+transpLLemma₁ : sym (ua fEquiv) ≡ (ua (invEquiv fEquiv))
+transpLLemma₁ = EquivJ
+  (λ _ _ e → sym (ua e) ≡ ua (invEquiv e)) (λ A → baseIndLemma A) ℕ₀ ℕ fEquiv 
 
 transpL : (z : ℕ₀) → transport (sym fEq) z ≡ g z
-transpL z = (transpLLemma₂ z) ∙  (Univalence.uaβ gEquiv z) -- Univalence.uaβ gEquiv z
---transport (ua e) x ≡ e .fst x
---g (suc x , _) = x 
+transpL z =
+  transport (sym fEq) z ≡⟨ (cong (λ p → transport p z) transpLLemma₁) ⟩
+  transport (ua (invEquiv fEquiv)) z ≡⟨ refl ⟩
+  transport (ua gEquiv) z ≡⟨ (Univalence.uaβ gEquiv z) ⟩
+  g z ∎
 
-
+-- could be generalized to other structure-preserving maps
 gIsMorphism : (x y : ℕ₀) → f (op₁  (g x) (g y)) ≡ (op₂ x y)
 gIsMorphism (suc x , _) (suc y , _) = refl
 
@@ -73,8 +64,6 @@ endLemma i x y =
    f (op₁  (transport (sym fEq) x) (transport (sym fEq) y))
        ≡⟨ cong₂ (λ x y → f (op₁ x y)) (transpL x) (transpL y) ⟩
    f (op₁  (g x) (g  y))
---       ≡⟨  cong f (refl) ⟩
---   ((suc (g x + g y))  , true)
        ≡⟨ gIsMorphism x y ⟩
    op₂ x y ∎) i 
 

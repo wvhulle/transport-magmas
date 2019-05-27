@@ -109,7 +109,7 @@ fEquiv : ℕ ≃ ℕ₀
 fEquiv = isoToEquiv fIso
 
 gEquiv : ℕ₀ ≃ ℕ
-gEquiv = isoToEquiv (invIso fIso)
+gEquiv = invEquiv fEquiv -- isoToEquiv (invIso fIso)
 
 fEq : ℕ ≡ ℕ₀ 
 fEq = ua fEquiv
