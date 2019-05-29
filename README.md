@@ -14,6 +14,7 @@ Structure of the code:
  
  ## How to read this code
  
- Follow the installation instructions and open the file `AlgebraUA.agda` in emacs.
- Press `control-{c l}` to typecheck the code.
- Middle mouse click on identifiers to view definitions.
+ Follow the installation instructions and open the file `PropertyTransports.agda` in emacs.
+ 1. Press `control-{c l}` to typecheck the code.
+ 2. Normalize the transport property with `control-{c n}`.
+ 3. Middle mouse click on identifiers to view definitions.

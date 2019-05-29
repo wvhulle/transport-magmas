@@ -47,6 +47,9 @@ s₁ = record {
   _✧_ = op₁
   }
 
+-- isSet Carrier
+-- ∀ x y z → ((x ∙ y) ∙ z) ≡ (x ∙ (y ∙ z))
+
 data ⊥ : Set where
 
 data ⊤ : Set where
